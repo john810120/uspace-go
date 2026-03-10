@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>USPACE換電維護紀錄</title>
 
 <style>
@@ -105,22 +106,9 @@ border-bottom:1px solid #ddd;
 text-align:center;
 }
 
-.thumb{
-width:50px;
-border-radius:6px;
-cursor:pointer;
-}
-
 .deleteBtn{
 background:#c0392b;
 padding:6px 10px;
-}
-
-.photoDelete{
-background:#888;
-margin-top:4px;
-padding:4px 8px;
-font-size:12px;
 }
 
 .result-success{
@@ -133,23 +121,6 @@ border-radius:6px;
 background:#f8d7da;
 padding:4px 6px;
 border-radius:6px;
-}
-
-.imgViewer{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.85);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.imgViewer img{
-max-width:90%;
-max-height:90%;
 }
 
 </style>
@@ -172,7 +143,7 @@ max-height:90%;
 <button class="smallBtn deleteBtn" onclick="deleteSite()">刪除場域</button>
 
 <label>車位號碼 (可多個或區間)</label>
-<input id="spot">
+<input id="spot" placeholder="例: 1-5 或 1,2,3">
 
 <div class="row">
 
@@ -182,11 +153,6 @@ max-height:90%;
 <option value="換電">換電</option>
 <option value="有車">有車</option>
 </select>
-</div>
-
-<div>
-<label>照片</label>
-<input type="file" id="photo">
 </div>
 
 <div>
@@ -224,7 +190,6 @@ max-height:90%;
 <th>車位</th>
 <th>結果</th>
 <th>日期</th>
-<th>照片</th>
 <th>備註</th>
 <th>刪除</th>
 </tr>
@@ -236,10 +201,6 @@ max-height:90%;
 
 </div>
 
-</div>
-
-<div class="imgViewer" id="imgViewer" onclick="this.style.display='none'">
-<img id="bigImg">
 </div>
 
 <script>
@@ -327,18 +288,11 @@ let spot=expandSpots(document.getElementById("spot").value);
 let result=document.getElementById("result").value;
 let note=document.getElementById("note").value;
 
-let file=document.getElementById("photo").files[0];
-
-let reader=new FileReader();
-
-reader.onload=function(){
-
 records.push({
 site,
 spot,
 result,
 note,
-photo:reader.result,
 date:currentDate
 });
 
@@ -346,34 +300,11 @@ save();
 
 render();
 
-};
-
-if(file) reader.readAsDataURL(file);
-else{
-
-records.push({site,spot,result,note,photo:"",date:currentDate});
-
-save();
-
-render();
-
-}
-
 }
 
 function deleteRecord(i){
 
 records.splice(i,1);
-
-save();
-
-render();
-
-}
-
-function deletePhoto(i){
-
-records[i].photo="";
 
 save();
 
@@ -390,16 +321,6 @@ d.setDate(d.getDate()+n);
 currentDate=d.toISOString().split("T")[0];
 
 render();
-
-}
-
-function openImg(src){
-
-let v=document.getElementById("imgViewer");
-
-document.getElementById("bigImg").src=src;
-
-v.style.display="flex";
 
 }
 
@@ -434,14 +355,6 @@ html+=`
 
 <td>${r.date}</td>
 
-<td>
-
-${r.photo?`<img src="${r.photo}" class="thumb" onclick="openImg('${r.photo}')">
-<br>
-<button class="photoDelete" onclick="deletePhoto(${i})">刪除照片</button>`:""}
-
-</td>
-
 <td>${r.note||""}</td>
 
 <td>
@@ -461,7 +374,6 @@ document.getElementById("failCount").innerText="有車 : "+fail;
 }
 
 updateSiteList();
-
 render();
 
 </script>
